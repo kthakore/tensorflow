@@ -50,6 +50,8 @@ limitations under the License.
 #include "tensorflow/core/public/session.h"
 #include "tensorflow/core/public/tensor.h"
 
+#include <iostream>
+
 // These are all common classes it's handy to reference with no namespace.
 using tensorflow::Tensor;
 using tensorflow::Status;
@@ -195,11 +197,13 @@ Status PrintTopLabels(const std::vector<Tensor>& outputs,
   TF_RETURN_IF_ERROR(GetTopLabels(outputs, how_many_labels, &indices, &scores));
   tensorflow::TTypes<float>::Flat scores_flat = scores.flat<float>();
   tensorflow::TTypes<int32>::Flat indices_flat = indices.flat<int32>();
+  std::cout << "[";
   for (int pos = 0; pos < how_many_labels; ++pos) {
     const int label_index = indices_flat(pos);
     const float score = scores_flat(pos);
-    LOG(INFO) << labels[label_index] << " (" << label_index << "): " << score;
+    std::cout << '{ "label": ' << labels[label_index] << ', "index": ' << label_index << ', "score:" ' << score << '}';
   }
+  std::cout << "]";
   return Status::OK();
 }
 
